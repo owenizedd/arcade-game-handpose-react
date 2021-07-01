@@ -1,0 +1,25 @@
+body{
+  background-color: #222;
+}
+.App {
+  display: flex;
+  position: relative;
+}
+.App > * {
+  position: relative;
+}
+.webcam-ai__container{
+  width: 50%;
+  
+}
+.game{
+  width: 50%;
+}
+.webcam-ai__container > *{
+  position: absolute;
+  width: 100%;
+  z-index: 1;
+}
+.webcam-ai__canvas{
+  z-index : 2;
+}
