@@ -8,7 +8,7 @@ const fingerJoints = {
 const fingers = [ 'thumb', 'indexFinger', 'middleFinger', 'ringFinger', 'pinky'];
 
 //maximum close hand distance between joints start to determine as close hand with 
-//formula: x1-x2 + y1-y2
+//formula: abs(x1-x2) + abs(y1-y2)
 const maxCloseHandDistance = 10;
 export const drawHand = (predictions, ctx) => {
   let closeHand = false;
@@ -48,20 +48,28 @@ export const drawHand = (predictions, ctx) => {
       ctx.fill();
     }
 
-    //determine close or open hands
+    //a little simple algorithm to determine close or open hands
+    //looks dumb but it somehow do the job lol
+    //we start from index 1 to exclude thumb
     for(let j = 1; j < fingers.length; j++){
       
       const maxAllowedDistanceToClose = 80;
-      
+      // get fingers name
       const finger = fingers[j];
+      //get joints by finger name
       const targetJoint = fingerJoints[finger][1];
+      //subtract finger joint number 0 (base) with target joint (1) to get distance
       const distanceXBase = Math.abs(landmarks[targetJoint][0] - landmarks[0][0]);
       const distanceYBase = Math.abs(landmarks[targetJoint][1] - landmarks[0][1]);
       const baseToFirstDist = distanceXBase + distanceYBase;
+
+      //subtract finger joint number 0 (base) with target joint(4) to get instance
       const lastJoint = fingerJoints[finger][4];
       const distanceX = Math.abs(landmarks[lastJoint][0] - landmarks[0][0]);
       const distanceY = Math.abs(landmarks[lastJoint][1] - landmarks[0][1]);
       const baseToLastDist = distanceX + distanceY;
+
+      //get distance base to last and base to first
       const totalDiff = Math.abs(baseToLastDist - baseToFirstDist);
       // console.log(totalDiff);
       if (totalDiff <= maxAllowedDistanceToClose){

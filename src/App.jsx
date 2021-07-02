@@ -3,17 +3,19 @@ import * as tf from '@tensorflow/tfjs';
 import * as handpose from '@tensorflow-models/handpose';
 import Webcam from 'react-webcam';
 import { drawHand } from './utils';
+import Game from './utils/game';
+
 import './App.css'
 import { webcam } from '@tensorflow/tfjs-data';
 
 function App() {
   const webcamRef = useRef();
   const canvasRef = useRef();
+  const gameCanvasRef = useRef();
+  const gameRef = useRef();
   const [isLoading, setIsLoading] = useState(false);
 
-
-
-  const runHandpose = async () => {
+  const initializeHandpose = async () => {
 
     setIsLoading(true);
 
@@ -32,11 +34,18 @@ function App() {
       
       //either "closed" or "opened"
       const pose = drawHand(hand, canvasRef.current.getContext('2d'));
-      
+      if (pose === "OPENED"){
+        gameRef.current.moveBox(true);
+      }
+      else gameRef.current.moveBox(false);
     }
   }
   useEffect(() => {
-    runHandpose();
+    gameCanvasRef.current.width = window.innerWidth / 2;
+    gameCanvasRef.current.height = window.innerHeight - 100;
+
+    gameRef.current = new Game(gameCanvasRef.current);
+    initializeHandpose();
   }, [])
   return (
     <div className="App">
@@ -46,7 +55,7 @@ function App() {
         <canvas className="webcam-ai__canvas" ref={canvasRef}/>
       </div>
       <div className="game">
-        
+        <canvas className="game__canvas" ref={gameCanvasRef}/>
       </div>
     </div>
   )
